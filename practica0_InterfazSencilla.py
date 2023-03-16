@@ -12,7 +12,7 @@ def encrypt_decrypt(text, key):
     for char in text:
         if char.isalpha():
             # Convertir el carácter a su valor ASCII y sumarle la llave
-            char_code = ord(char) + key
+            char_code = ord(char) + key % 26
 
             # Si el carácter es mayúscula y se sale del rango ASCII de las mayúsculas, volver a A
             if char.isupper() and char_code > ord('Z'):
@@ -21,6 +21,14 @@ def encrypt_decrypt(text, key):
             # Si el carácter es minúscula y se sale del rango ASCII de las minúsculas, volver a a
             elif char.islower() and char_code > ord('z'):
                 char_code -= 26
+
+            #Si el carácter es mayuscula y se sale del rangode las mayusculas, volver a Z
+            elif char.isupper() and char_code < ord('A'):
+                char_code += 26
+            
+            #Si el carácter es minuscula y se sale del rangode las mayusculas, volver a z
+            elif char.islower() and char_code < ord('a'):
+                char_code += 26
 
             # Convertir el nuevo valor ASCII a carácter y añadirlo al resultado
             result += chr(char_code)
@@ -71,7 +79,8 @@ def decrypt_file():
 
     # Obtener la llave introducida por el usuario
     key = int(key_entry.get())
-
+    print(key)
+    print(-key)
     # Descifrar el contenido del archivo
     try:
         with open(filepath, 'r') as f:
@@ -105,6 +114,9 @@ def encrypt_image():
     save_filepath = filedialog.asksaveasfilename(title='Guardar imagen cifrada', filetypes=[('Imagen BMP', '*.bmp')])
     encrypted_image.save(save_filepath)
 
+    # Guardar la llave en un archivo
+    save_key(str(key_entry.get()))
+
     messagebox.showinfo('Éxito', 'La imagen se ha cifrado y guardado correctamente.')
 
 def decrypt_image():
@@ -114,6 +126,7 @@ def decrypt_image():
 
     # Obtener el desplazamiento de la llave
     shift = int(key_entry.get())
+    
 
     # Descifrar la imagen
     decrypted_image = image.point(lambda p: (p - shift) % 256)
